@@ -1,0 +1,43 @@
+.container {
+  h1 {
+    font-size: 1.75rem;
+    font-family: 700;
+    color: var(--white);
+  }
+
+  > p {
+    font-size: 1.125rem;
+    color: var(--gray-200);
+    margin-top: 0.5rem;
+  }
+
+  div {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+
+    span {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      svg {
+        color: var(--gray-300);
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+
+      p {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        color: var(--gray-300);
+        margin-left: 0.25rem;
+      }
+    }
+  }
+
+  & + div {
+   margin-top: 3rem;
+  }
+}

@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Public Development Assets
+/public/banner.webp
+
 # dependencies
 /node_modules
 /.pnp
