@@ -1,14 +1,13 @@
-import { useEffect, useState } from 'react';
-import { GetServerSideProps, GetStaticPaths, GetStaticProps } from 'next';
+import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
-import { RichText } from 'prismic-dom';
+import { useRouter } from 'next/router';
 import { FiCalendar, FiUser, FiClock } from 'react-icons/fi';
+import { RichText } from 'prismic-dom';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-import { useRouter } from 'next/router';
-import { Header } from '../../components/Header';
-import { getPrismicClient, PrismicPredicates } from '../../services/prismic';
+import Header from '../../components/Header';
+import { getPrismicClient } from '../../services/prismic';
 
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
@@ -35,25 +34,22 @@ interface PostProps {
 }
 
 export default function Post({ post }: PostProps): JSX.Element {
-  const [readTimeInMinutes, setReadTimeInMinutes] = useState(0);
   const router = useRouter();
 
-  useEffect(() => {
-    const wordsSize = post.data.content.reduce((acc, curr) => {
-      const wordsNumberByContent = curr.body.reduce(
-        (totalWordsLength, currentBody) => {
-          const wordsLength: number = currentBody.text?.split(' ').length;
+  const wordsSize = post.data.content.reduce((acc, curr) => {
+    const wordsNumberByContent = curr.body.reduce(
+      (totalWordsLength, currentBody) => {
+        const wordsLength: number = currentBody.text?.split(' ').length;
 
-          return totalWordsLength + (wordsLength || 0);
-        },
-        0
-      );
+        return totalWordsLength + (wordsLength || 0);
+      },
+      0
+    );
 
-      return acc + wordsNumberByContent;
-    }, 0);
+    return acc + wordsNumberByContent;
+  }, 0);
 
-    setReadTimeInMinutes(Math.ceil(wordsSize / 200));
-  }, []);
+  const readTimeInMinutes = Math.ceil(wordsSize / 200);
 
   if (router.isFallback) {
     return <p>Carregando...</p>;
@@ -114,14 +110,10 @@ export default function Post({ post }: PostProps): JSX.Element {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const prismic = getPrismicClient();
-  const posts = await prismic.query(
-    [PrismicPredicates.at('document.type', 'post')],
-    {
-      fetch: ['post.uid'],
-      pageSize: 50,
-    }
-  );
+  const prismic = getPrismicClient({});
+  const posts = await prismic.getByType('posts', {
+    pageSize: 50,
+  });
 
   return {
     paths: posts.results.map(post => ({
@@ -133,7 +125,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { slug } = params;
-  const prismic = getPrismicClient();
+  const prismic = getPrismicClient({});
   const post = await prismic.getByUID('post', String(slug), {});
 
   return {
